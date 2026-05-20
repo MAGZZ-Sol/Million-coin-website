@@ -1,0 +1,198 @@
+:root {
+  --bg: #ffffff;
+  --text: #1a1a1a;
+  --muted: #9ca3af;
+  --border: #e5e7eb;
+  --green: #12632f;
+  --green-light: #22c55e;
+  --card-bg: #f3f4f6;
+  --max-width: 620px;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 56px 28px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.hero {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo {
+  width: 160px;
+  height: 160px;
+  margin-bottom: 28px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.label {
+  margin: 0 0 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.market-cap {
+  margin: 0 0 36px;
+  font-size: 4rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: #d1d5db;
+  line-height: 1.1;
+}
+
+.market-cap.live { color: var(--text); font-weight: 400; }
+
+.progress-block { width: 100%; margin-bottom: 12px; }
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9375rem;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--green);
+  border-radius: 999px;
+  transition: width 0.6s ease;
+}
+
+.status-line {
+  margin: 14px 0 0;
+  font-size: 0.9375rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green-light);
+}
+
+.status-sep { opacity: 0.6; }
+
+.title {
+  margin: 40px 0 32px;
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.contract-card {
+  width: 100%;
+  background: var(--card-bg);
+  border-radius: 18px;
+  padding: 20px 22px;
+  margin-bottom: 28px;
+}
+
+.contract-label {
+  margin: 0 0 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.contract-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.contract-address {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 1.125rem;
+  text-align: left;
+  flex: 1;
+}
+
+.copy-btn {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.copy-btn:hover { color: var(--text); background: rgba(0,0,0,0.05); }
+.copy-btn.copied { color: var(--green); }
+
+.actions { width: 100%; display: flex; flex-direction: column; gap: 16px; }
+
+.action-btn {
+  display: block;
+  width: 100%;
+  padding: 20px 24px;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.action-btn:hover { background: #f9fafb; border-color: #d1d5db; }
+
+@media (min-width: 480px) {
+  .page { padding-top: 72px; }
+  .logo { width: 184px; height: 184px; margin-bottom: 36px; }
+  .market-cap { font-size: 4.75rem; }
+  .title { font-size: 2.75rem; }
+  .contract-address { font-size: 1.25rem; }
+  .action-btn { font-size: 1.25rem; padding: 22px 28px; }
+}

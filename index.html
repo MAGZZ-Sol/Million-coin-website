@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="The Million Experiment - racing to $1M market cap." />
+    <title>The Million Experiment</title>
+    <link rel="icon" href="logo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <img class="logo" id="logo" src="logo.svg" width="160" height="160" alt="Coin logo" />
+        <p class="label">MARKET CAP</p>
+        <p class="market-cap" id="marketCap">$ -</p>
+        <section class="progress-block" aria-label="Progress to one million dollars">
+          <div class="progress-header">
+            <span id="progressLabel">Progress to $1M</span>
+            <span id="progressPct">0.00%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <p class="status-line">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span id="timeSinceLaunch">0s since launch</span>
+            <span class="status-sep">&bull;</span>
+            <span>racing to $1M</span>
+          </p>
+        </section>
+      </header>
+      <h1 class="title" id="pageTitle">The Million Experiment</h1>
+      <div class="contract-card">
+        <p class="contract-label">CONTRACT ADDRESS</p>
+        <div class="contract-row">
+          <code class="contract-address" id="contractDisplay">-</code>
+          <button type="button" class="copy-btn" id="copyBtn" aria-label="Copy contract address" title="Copy">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.75" />
+              <path d="M7 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="1.75" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <nav class="actions" aria-label="External links">
+        <a class="action-btn" id="linkDex" href="#" target="_blank" rel="noopener noreferrer">Dexscreener</a>
+        <a class="action-btn" id="linkPump" href="#" target="_blank" rel="noopener noreferrer">Pump.fun</a>
+      </nav>
+    </main>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

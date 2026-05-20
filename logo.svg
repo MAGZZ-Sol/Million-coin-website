@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Logo">
+  <circle cx="100" cy="100" r="100" fill="#12632F"/>
+  <g transform="translate(100 102) rotate(16) translate(-52 -58)">
+    <path fill="#ffffff" d="M0 0 L28 0 L52 58 L76 0 L104 0 L104 116 L78 116 L78 44 L52 104 L26 44 L26 116 L0 116 Z"/>
+  </g>
+</svg>
