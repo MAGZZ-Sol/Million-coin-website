@@ -23,9 +23,16 @@
     return Math.floor(seconds / 86400) + "d since launch";
   }
 
+  function setHref(id, url) {
+    const el = $(id);
+    if (el && url) el.href = url;
+  }
+
   function applyConfig() {
-    $("pageTitle").textContent = cfg.title || "The Million Experiment";
-    document.title = cfg.title || "The Million Experiment";
+    const title = cfg.title || "The Million Experiment";
+    const titleEl = $("pageTitle");
+    if (titleEl) titleEl.textContent = title;
+    document.title = title;
 
     const logoEl = $("logo");
     if (logoEl && logoEl.tagName === "IMG" && cfg.logoUrl) {
@@ -33,24 +40,31 @@
     }
 
     const addr = cfg.contractAddress || "";
-    $("contractDisplay").textContent = shortenAddress(addr);
-    $("contractDisplay").dataset.full = addr;
+    const contractEl = $("contractDisplay");
+    if (contractEl) {
+      contractEl.textContent = shortenAddress(addr);
+      contractEl.dataset.full = addr;
+    }
 
-    $("linkDex").href = cfg.links?.dexscreener || "#";
-    $("linkPump").href = cfg.links?.pumpfun || "#";
+    setHref("linkDex", cfg.links && cfg.links.dexscreener);
+    setHref("linkPump", cfg.links && cfg.links.pumpfun);
 
     const goalLabel = GOAL >= 1_000_000 ? "$1M" : "$" + (GOAL / 1_000).toFixed(0) + "K";
-    $("progressLabel").textContent = "Progress to " + goalLabel;
+    const progressLabel = $("progressLabel");
+    if (progressLabel) progressLabel.textContent = "Progress to " + goalLabel;
   }
 
   function updateProgress(marketCap) {
     const pct = marketCap > 0 ? Math.min(100, (marketCap / GOAL) * 100) : 0;
-    $("progressPct").textContent = pct.toFixed(2) + "%";
-    $("progressFill").style.width = pct + "%";
+    const pctEl = $("progressPct");
+    const fillEl = $("progressFill");
+    if (pctEl) pctEl.textContent = pct.toFixed(2) + "%";
+    if (fillEl) fillEl.style.width = pct + "%";
   }
 
   function updateMarketCap(value) {
     const el = $("marketCap");
+    if (!el) return;
     if (value != null && Number.isFinite(value) && value > 0) {
       el.textContent = formatUsd(value);
       el.classList.add("live");
@@ -64,7 +78,8 @@
 
   function tickClock() {
     const elapsed = Math.max(0, Math.floor(Date.now() / 1000) - launchTs);
-    $("timeSinceLaunch").textContent = formatElapsed(elapsed);
+    const el = $("timeSinceLaunch");
+    if (el) el.textContent = formatElapsed(elapsed);
   }
 
   async function fetchMarketCap() {
@@ -74,28 +89,32 @@
       const res = await fetch(api);
       if (!res.ok) return;
       const data = await res.json();
-      const pair = data?.pairs?.[0];
-      const cap = pair?.marketCap ?? pair?.fdv;
+      const pair = data && data.pairs && data.pairs[0];
+      const cap = pair && (pair.marketCap != null ? pair.marketCap : pair.fdv);
       if (cap != null) updateMarketCap(Number(cap));
     } catch (_) {}
   }
 
-  $("copyBtn").addEventListener("click", async function () {
-    const full = $("contractDisplay").dataset.full;
-    if (!full) return;
-    try {
-      await navigator.clipboard.writeText(full);
-      $("copyBtn").classList.add("copied");
-      setTimeout(function () { $("copyBtn").classList.remove("copied"); }, 1500);
-    } catch (_) {
-      const ta = document.createElement("textarea");
-      ta.value = full;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-    }
-  });
+  var copyBtn = $("copyBtn");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async function () {
+      const contractEl = $("contractDisplay");
+      const full = contractEl && contractEl.dataset.full;
+      if (!full) return;
+      try {
+        await navigator.clipboard.writeText(full);
+        copyBtn.classList.add("copied");
+        setTimeout(function () { copyBtn.classList.remove("copied"); }, 1500);
+      } catch (_) {
+        var ta = document.createElement("textarea");
+        ta.value = full;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+    });
+  }
 
   applyConfig();
   tickClock();
