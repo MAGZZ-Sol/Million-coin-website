@@ -1,7 +1,9 @@
 (function () {
   const cfg = window.COIN_CONFIG || {};
-  const GOAL = cfg.goalMarketCap ?? 1_000_000;
-  const launchTs = cfg.launchTimestamp ?? Math.floor(Date.now() / 1000);
+  const GOAL = cfg.goalMarketCap ?? 1000000;
+  const REFRESH_MS = cfg.marketCapRefreshMs ?? 10000;
+  let launchTs = cfg.launchTimestamp ?? null;
+
   const $ = (id) => document.getElementById(id);
 
   function shortenAddress(addr) {
@@ -11,8 +13,8 @@
 
   function formatUsd(n) {
     if (n == null || !Number.isFinite(n)) return "$ -";
-    if (n >= 1_000_000) return "$" + (n / 1_000_000).toFixed(2) + "M";
-    if (n >= 1_000) return "$" + (n / 1_000).toFixed(1) + "K";
+    if (n >= 1000000) return "$" + (n / 1000000).toFixed(2) + "M";
+    if (n >= 1000) return "$" + (n / 1000).toFixed(1) + "K";
     return "$" + Math.round(n).toLocaleString();
   }
 
@@ -35,9 +37,7 @@
     document.title = title;
 
     const logoEl = $("logo");
-    if (logoEl && logoEl.tagName === "IMG" && cfg.logoUrl) {
-      logoEl.src = cfg.logoUrl;
-    }
+    if (logoEl && logoEl.tagName === "IMG" && cfg.logoUrl) logoEl.src = cfg.logoUrl;
 
     const addr = cfg.contractAddress || "";
     const contractEl = $("contractDisplay");
@@ -49,7 +49,7 @@
     setHref("linkDex", cfg.links && cfg.links.dexscreener);
     setHref("linkPump", cfg.links && cfg.links.pumpfun);
 
-    const goalLabel = GOAL >= 1_000_000 ? "$1M" : "$" + (GOAL / 1_000).toFixed(0) + "K";
+    const goalLabel = GOAL >= 1000000 ? "$1M" : "$" + Math.round(GOAL / 1000) + "K";
     const progressLabel = $("progressLabel");
     if (progressLabel) progressLabel.textContent = "Progress to " + goalLabel;
   }
@@ -65,32 +65,53 @@
   function updateMarketCap(value) {
     const el = $("marketCap");
     if (!el) return;
-    if (value != null && Number.isFinite(value) && value > 0) {
+    if (value != null && Number.isFinite(value) && value >= 0) {
       el.textContent = formatUsd(value);
       el.classList.add("live");
       updateProgress(value);
-    } else {
-      el.textContent = "$ -";
-      el.classList.remove("live");
-      updateProgress(0);
     }
   }
 
   function tickClock() {
+    if (!launchTs) return;
     const elapsed = Math.max(0, Math.floor(Date.now() / 1000) - launchTs);
     const el = $("timeSinceLaunch");
     if (el) el.textContent = formatElapsed(elapsed);
   }
 
+  function dexscreenerTokenUrl(mint) {
+    return "https://api.dexscreener.com/latest/dex/tokens/" + encodeURIComponent(mint);
+  }
+
+  function pickBestPair(pairs) {
+    if (!pairs || !pairs.length) return null;
+    var best = pairs[0];
+    for (var i = 1; i < pairs.length; i++) {
+      var p = pairs[i];
+      var cap = p.marketCap || p.fdv || 0;
+      var bestCap = best.marketCap || best.fdv || 0;
+      if (cap > bestCap) best = p;
+    }
+    return best;
+  }
+
   async function fetchMarketCap() {
-    const api = (cfg.dexscreenerApiUrl || "").trim();
-    if (!api) return;
+    const mint = (cfg.contractAddress || "").trim();
+    if (!mint) return;
+
     try {
-      const res = await fetch(api);
+      const res = await fetch(dexscreenerTokenUrl(mint));
       if (!res.ok) return;
       const data = await res.json();
-      const pair = data && data.pairs && data.pairs[0];
-      const cap = pair && (pair.marketCap != null ? pair.marketCap : pair.fdv);
+      const pair = pickBestPair(data.pairs);
+      if (!pair) return;
+
+      if (launchTs == null && pair.pairCreatedAt) {
+        launchTs = Math.floor(pair.pairCreatedAt / 1000);
+      }
+
+      var cap = pair.marketCap;
+      if (cap == null) cap = pair.fdv;
       if (cap != null) updateMarketCap(Number(cap));
     } catch (_) {}
   }
@@ -98,8 +119,8 @@
   var copyBtn = $("copyBtn");
   if (copyBtn) {
     copyBtn.addEventListener("click", async function () {
-      const contractEl = $("contractDisplay");
-      const full = contractEl && contractEl.dataset.full;
+      var contractEl = $("contractDisplay");
+      var full = contractEl && contractEl.dataset.full;
       if (!full) return;
       try {
         await navigator.clipboard.writeText(full);
@@ -117,8 +138,8 @@
   }
 
   applyConfig();
-  tickClock();
-  setInterval(tickClock, 1000);
   fetchMarketCap();
-  setInterval(fetchMarketCap, 15000);
+  setInterval(fetchMarketCap, REFRESH_MS);
+  setInterval(tickClock, 1000);
+  tickClock();
 })();
